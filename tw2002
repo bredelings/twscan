@@ -1,0 +1,3 @@
+#!/bin/sh
+script -a ~/twscan/capture1.txt -c "telnet bbs.thenexusbbs.com 2002"
+
