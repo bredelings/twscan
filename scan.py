@@ -3,20 +3,28 @@ import re
 def draw_graph(sector, ports):
     print('strict digraph G {')
     print('  concentrate=true')
+    print('  overlap=false')
     for s1 in warps.keys():
         for s2 in warps[s1]:
-            print("  "+s1+" -> "+s2)
+            if s1 in warps.get(s2,set()):
+                if (s1 < s2):
+                    print("  "+s1+" -> "+s2+' [dir="both"]')
+            else:
+                print("  "+s1+" -> "+s2)
     for s in ports.keys():
         print("  "+s+'[label="'+s+"\\n"+ports[s]+'"]')
     print('}')
 
 def scan(filename):
-    f = open(filename,'r')
+    f = open(filename,'r',encoding="cp1252")
+
+    ansi_escape = re.compile(r'\x1b[^m]*m')
 
     sector = "unknown"
     warps = {}
     ports = {}
     for line in f:
+        line = ansi_escape.sub('',line)
 
         m = re.match('Sector  : (\d+) in',line)
         if m:
@@ -33,7 +41,7 @@ def scan(filename):
         if m:
 #           print(m.group(1), end='\n')
            for dest in m.group(1).split(' - '):
-               m = re.match('^\((.*)\)$',dest)
+               m = re.match('\((.*)\)',dest)
                if m:
                    dest = m.group(1)
 #               print(sector + " -> " + dest)
