@@ -1,32 +1,33 @@
 import re
 
 def draw_graph(sector, ports):
+    print('strict digraph G {')
+    print('  concentrate=true')
     for s1 in warps.keys():
         for s2 in warps[s1]:
-            print(s1+" -> "+s2)
+            print("  "+s1+" -> "+s2)
     for s in ports.keys():
-        print(s+": "+ports[s])
+        print("  "+s+'[label="'+s+"\\n"+ports[s]+'"]')
+    print('}')
 
 def scan(filename):
     f = open(filename,'r')
-    location = "unknown"
+
     sector = "unknown"
     warps = {}
     ports = {}
     for line in f:
-        m = re.match('.*arping to sector (\d+)$',line)
-        if m:
-            location = m.group(1)
-#            print('sector = ' + location, end='\n')
+
         m = re.match('Sector  : (\d+) in',line)
         if m:
             sector = m.group(1)
-#            print('sector = ' + location, end='\n')
+#           print('sector = ' + sector, end='\n')
+            continue
 
         m = re.match('Ports   : .*\((.*)\)',line)
         if m:
             ports[sector] = m.group(1)
-
+            continue
 
         m = re.match('^Warps to Sector\(s\) :  (.*)$',line)
         if m:
@@ -35,11 +36,13 @@ def scan(filename):
                m = re.match('^\((.*)\)$',dest)
                if m:
                    dest = m.group(1)
-#               print(location + " -> " + dest)
-               if (location != "unknown"):
-                   warps[location] = warps.get(location,set())
-                   warps[location].add(dest)
+#               print(sector + " -> " + dest)
+               if (sector != "unknown"):
+                   warps[sector] = warps.get(sector,set())
+                   warps[sector].add(dest)
+           continue
 
+    sector = "unknown"
     return (warps,ports)
 
 if __name__ == "__main__":
