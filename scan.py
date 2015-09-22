@@ -11,8 +11,17 @@ def draw_graph(sector, ports):
                     print("  "+s1+" -> "+s2+' [dir="both"]')
             else:
                 print("  "+s1+" -> "+s2)
-    for s in ports.keys():
-        print("  "+s+'[label="'+s+"\\n"+ports[s]+'"]')
+    sectors = set(ports.keys()).union(set(sector.keys()))
+    for s in sectors:
+        
+        label = s
+        if s in ports:
+            label = label + '\\n'+ports.get(s,'')
+        color = ''
+        if len(sector.get(s,set())) == 1:
+            color = ',color=red'
+        print("  "+s+'[label="'+label+'"'+color+']')
+
     print('}')
 
 def scan(filename):
